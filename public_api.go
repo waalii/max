@@ -19,7 +19,7 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/maicoin/max-exchange-api-go/models"
+	"github.com/waalii/max/models"
 )
 
 type publicClient = client

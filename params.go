@@ -15,7 +15,7 @@
 package max
 
 import (
-	"github.com/maicoin/max-exchange-api-go/types"
+	"github.com/waalii/max/types"
 )
 
 var (

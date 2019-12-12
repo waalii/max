@@ -20,8 +20,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/maicoin/max-exchange-api-go"
-	"github.com/maicoin/max-exchange-api-go/models"
+	"github.com/waalii/max"
+	"github.com/waalii/max/models"
 )
 
 func main() {

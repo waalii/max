@@ -17,7 +17,7 @@ package models
 import (
 	"time"
 
-	"github.com/maicoin/max-exchange-api-go/types"
+	"github.com/waalii/max/types"
 )
 
 type Candle struct {

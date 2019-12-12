@@ -19,7 +19,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/maicoin/max-exchange-api-go/api"
+	"github.com/waalii/max/api"
 )
 
 func NewClient(opts ...ClientOption) *client {

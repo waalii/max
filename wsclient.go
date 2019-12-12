@@ -21,7 +21,7 @@ import (
 	"os"
 	"sync"
 
-	"github.com/maicoin/max-exchange-api-go/models"
+	"github.com/waalii/max/models"
 
 	event "github.com/asaskevich/EventBus"
 	"github.com/gorilla/websocket"

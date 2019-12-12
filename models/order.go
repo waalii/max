@@ -19,7 +19,7 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/maicoin/max-exchange-api-go/types"
+	"github.com/waalii/max/types"
 )
 
 type OrderRequest struct {

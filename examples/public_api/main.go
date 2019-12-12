@@ -19,7 +19,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/maicoin/max-exchange-api-go"
+	"github.com/waalii/max"
 )
 
 func main() {

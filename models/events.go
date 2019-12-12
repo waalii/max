@@ -17,7 +17,7 @@ package models
 import (
 	"time"
 
-	"github.com/maicoin/max-exchange-api-go/types"
+	"github.com/waalii/max/types"
 )
 
 type TickerEvent struct {
@@ -30,8 +30,8 @@ type OrderBookEvent struct {
 	Market    string          `json:"market,omitempty"`
 	ID        int             `json:"id,omitempty"`
 	Side      types.OrderSide `json:"side,omitempty"`
-	Volume    types.Volume    `json:"volume,omitempty"`
-	Price     types.Price     `json:"price,omitempty"`
+	Volume    types.Volume    `json:"volume,omitempty,string"`
+	Price     types.Price     `json:"price,omitempty,string"`
 	OrderType types.OrderType `json:"ord_type,omitempty"`
 }
 

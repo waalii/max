@@ -18,7 +18,7 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/maicoin/max-exchange-api-go/types"
+	"github.com/waalii/max/types"
 )
 
 // get depth of a specified market, sorted from highest price to lowest

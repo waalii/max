@@ -22,8 +22,8 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/maicoin/max-exchange-api-go/models"
-	"github.com/maicoin/max-exchange-api-go/types"
+	"github.com/waalii/max/models"
+	"github.com/waalii/max/types"
 )
 
 type privateClient = client
