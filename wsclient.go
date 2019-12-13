@@ -96,7 +96,9 @@ func (w *wsClient) SubscribeTicker(market string, ch chan *models.TickerEvent) (
 		onEvent: handler,
 		unsubscribe: func() {
 			unsubscriber()
-			close(ch)
+			if _, ok := (<-ch); ok {
+				close(ch)
+			}
 		},
 	}, nil
 }
@@ -119,7 +121,9 @@ func (w *wsClient) SubscribeOrderBook(market string, ch chan *models.OrderBookEv
 		onEvent: handler,
 		unsubscribe: func() {
 			unsubscriber()
-			close(ch)
+			if _, ok := (<-ch); ok {
+				close(ch)
+			}
 		},
 	}, nil
 }
@@ -142,7 +146,9 @@ func (w *wsClient) SubscribeTrade(market string, ch chan *models.TradeEvent) (Tr
 		onEvent: handler,
 		unsubscribe: func() {
 			unsubscriber()
-			close(ch)
+			if _, ok := (<-ch); ok {
+				close(ch)
+			}
 		},
 	}, nil
 }
@@ -170,7 +176,9 @@ func (w *wsClient) SubscribeAccount(ch chan models.AccountEvent) (AccountSubscri
 		onEvent: handler,
 		unsubscribe: func() {
 			unsubscriber()
-			close(ch)
+			if _, ok := (<-ch); ok {
+				close(ch)
+			}
 		},
 	}, nil
 }
