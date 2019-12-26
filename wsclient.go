@@ -96,7 +96,16 @@ func (w *wsClient) SubscribeTicker(market string, ch chan *models.TickerEvent) (
 		onEvent: handler,
 		unsubscribe: func() {
 			unsubscriber()
-			if _, ok := (<-ch); ok {
+
+			if func() bool {
+				select {
+				case <-ch:
+					return false
+				default:
+				}
+
+				return true
+			}() {
 				close(ch)
 			}
 		},
@@ -121,7 +130,16 @@ func (w *wsClient) SubscribeOrderBook(market string, ch chan *models.OrderBookEv
 		onEvent: handler,
 		unsubscribe: func() {
 			unsubscriber()
-			if _, ok := (<-ch); ok {
+
+			if func() bool {
+				select {
+				case <-ch:
+					return false
+				default:
+				}
+
+				return true
+			}() {
 				close(ch)
 			}
 		},
