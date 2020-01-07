@@ -33,6 +33,7 @@ type OrderBookEvent struct {
 	Volume    types.Volume    `json:"volume,omitempty,string"`
 	Price     types.Price     `json:"price,omitempty,string"`
 	OrderType types.OrderType `json:"ord_type,omitempty"`
+	Timestamp int64           `json:"timestamp,omitempty,string"`
 }
 
 type TradeEvent struct {
