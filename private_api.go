@@ -211,15 +211,53 @@ func (c *privateClient) Withdrawal(ctx context.Context, uuid string, opts ...Cal
 //
 // Note:
 //     Use AuthToken() to pass your auth tokens.
-func (c *privateClient) CreateOrder(ctx context.Context, market string, side string, volumes types.Volume, opts ...CallOption) (*models.Order, error) {
+func (c *privateClient) CreateOrder(ctx context.Context, market string, side string, volume types.Volume, opts ...CallOption) (result *models.Order, err error) {
 	o := defaultOptions()
 	for _, opt := range opts {
 		opt(o)
 	}
 
-	order, _, err := c.c.PrivateApi.PostApiV2Orders(ctx, "", "", "", market, side, fmt.Sprintf("%v", volumes), o)
+	body := make(map[string]interface{})
 
-	return &order, err
+	body["market"] = market
+	body["side"] = side
+	body["volume"] = volume
+	if v, ok := o["price"]; ok {
+		body["price"] = v.(float64)
+	}
+	if v, ok := o["stop_price"]; ok {
+		body["stop_price"] = v.(float64)
+	}
+	if v, ok := o["ord_type"]; ok {
+		body["ord_type"] = v.(string)
+	}
+
+	r, err := c.c.PrepareRequest(ctx,
+		c.cfg.BasePath+"/api/v2/orders",
+		http.MethodPost,
+		body, make(map[string]string), url.Values{}, url.Values{}, "", nil)
+	if err != nil {
+		return nil, err
+	}
+
+	r.Header.Set("Content-Type", "application/json")
+	r.Header.Set("Accept", "application/json")
+
+	resp, err := c.c.CallAPI(r)
+	if err != nil || resp == nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode >= 300 {
+		bodyBytes, _ := ioutil.ReadAll(resp.Body)
+		return nil, fmt.Errorf("Status: %v, Body: %s", resp.Status, bodyBytes)
+	}
+
+	if err = json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		return result, err
+	}
+
+	return result, err
 }
 
 // CreateOrders creates multiple sell/buy orders.
@@ -273,15 +311,42 @@ func (c *privateClient) CreateOrders(ctx context.Context, market string, orderRe
 //
 // Note:
 //     Use AuthToken() to pass your auth tokens.
-func (c *privateClient) CancelOrder(ctx context.Context, id int32, opts ...CallOption) (*models.Order, error) {
+func (c *privateClient) CancelOrder(ctx context.Context, id int32, opts ...CallOption) (result *models.Order, err error) {
 	o := defaultOptions()
 	for _, opt := range opts {
 		opt(o)
 	}
 
-	order, _, err := c.c.PrivateApi.PostApiV2OrderDelete(ctx, "", "", "", id)
+	body := make(map[string]interface{})
 
-	return &order, err
+	body["id"] = id
+
+	r, err := c.c.PrepareRequest(ctx,
+		c.cfg.BasePath+"/api/v2/order/delete",
+		http.MethodPost,
+		body, make(map[string]string), url.Values{}, url.Values{}, "", nil)
+	if err != nil {
+		return nil, err
+	}
+
+	r.Header.Set("Content-Type", "application/json")
+	r.Header.Set("Accept", "application/json")
+
+	resp, err := c.c.CallAPI(r)
+	if err != nil || resp == nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode >= 300 {
+		bodyBytes, _ := ioutil.ReadAll(resp.Body)
+		return nil, fmt.Errorf("Status: %v, Body: %s", resp.Status, bodyBytes)
+	}
+
+	if err = json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		return result, err
+	}
+
+	return result, err
 }
 
 // CancelOrders cancels a series of sell/buy orders.
@@ -298,9 +363,37 @@ func (c *privateClient) CancelOrders(ctx context.Context, opts ...CallOption) (r
 		opt(o)
 	}
 
-	orders, _, err := c.c.PrivateApi.PostApiV2OrdersClear(ctx, "", "", "", o)
-	for _, order := range orders {
-		results = append(results, &order)
+	body := make(map[string]interface{})
+	if v, ok := o["market"]; ok {
+		body["market"] = v.(string)
+	}
+	if v, ok := o["side"]; ok {
+		body["side"] = v.(string)
+	}
+
+	r, err := c.c.PrepareRequest(ctx,
+		c.cfg.BasePath+"/api/v2/orders/clear",
+		http.MethodPost,
+		body, make(map[string]string), url.Values{}, url.Values{}, "", nil)
+	if err != nil {
+		return nil, err
+	}
+
+	r.Header.Set("Content-Type", "application/json")
+	r.Header.Set("Accept", "application/json")
+
+	resp, err := c.c.CallAPI(r)
+	if err != nil || resp == nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode >= 300 {
+		bodyBytes, _ := ioutil.ReadAll(resp.Body)
+		return nil, fmt.Errorf("Status: %v, Body: %s", resp.Status, bodyBytes)
+	}
+
+	if err = json.NewDecoder(resp.Body).Decode(&results); err != nil {
+		return results, err
 	}
 
 	return results, err
@@ -312,16 +405,48 @@ func (c *privateClient) CancelOrders(ctx context.Context, opts ...CallOption) (r
 //
 // Note:
 //     Use AuthToken() to pass your auth tokens.
-func (c *privateClient) Order(ctx context.Context, id int32, opts ...CallOption) (*models.Order, error) {
-	order, _, err := c.c.PrivateApi.GetApiV2Order(ctx, "", "", "", id)
+func (c *privateClient) Order(ctx context.Context, id int32, opts ...CallOption) (result *models.Order, err error) {
+	o := defaultOptions()
+	for _, opt := range opts {
+		opt(o)
+	}
 
-	return &order, err
+	body := make(map[string]interface{})
+
+	body["id"] = id
+
+	r, err := c.c.PrepareRequest(ctx,
+		c.cfg.BasePath+"/api/v2/order",
+		http.MethodGet,
+		body, make(map[string]string), url.Values{}, url.Values{}, "", nil)
+	if err != nil {
+		return nil, err
+	}
+
+	r.Header.Set("Content-Type", "application/json")
+	r.Header.Set("Accept", "application/json")
+
+	resp, err := c.c.CallAPI(r)
+	if err != nil || resp == nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode >= 300 {
+		bodyBytes, _ := ioutil.ReadAll(resp.Body)
+		return nil, fmt.Errorf("Status: %v, Body: %s", resp.Status, bodyBytes)
+	}
+
+	if err = json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		return result, err
+	}
+
+	return result, err
 }
 
 // Orders returns your orders.
 //
 // Available `CallOption`:
-//     State(): filter by state, default to 'OrderStateWait'
+//     OrderState(): filter by state, default to 'OrderStateWait'
 //     OrderDesc(): use descending order by created time
 //     OrderAsc(): use ascending order by created time, default value
 //     Pagination(): do pagination & return metadata in header (default true)
@@ -337,10 +462,51 @@ func (c *privateClient) Orders(ctx context.Context, market string, opts ...CallO
 		opt(o)
 	}
 
-	orders, _, err := c.c.PrivateApi.GetApiV2Orders(ctx, "", "", "", market, o)
-	for _, order := range orders {
-		order := order
-		results = append(results, &order)
+	body := make(map[string]interface{})
+
+	body["market"] = market
+	if v, ok := o["state"]; ok {
+		body["state"] = v.(string)
+	}
+	if v, ok := o["order_by"]; ok {
+		body["order_by"] = v.(string)
+	}
+	if v, ok := o["pagination"]; ok {
+		body["pagination"] = v.(bool)
+	}
+	if v, ok := o["page"]; ok {
+		body["page"] = v.(int32)
+	}
+	if v, ok := o["limit"]; ok {
+		body["limit"] = v.(int32)
+	}
+	if v, ok := o["offset"]; ok {
+		body["offset"] = v.(int32)
+	}
+
+	r, err := c.c.PrepareRequest(ctx,
+		c.cfg.BasePath+"/api/v2/orders",
+		http.MethodGet,
+		body, make(map[string]string), url.Values{}, url.Values{}, "", nil)
+	if err != nil {
+		return nil, err
+	}
+
+	r.Header.Set("Content-Type", "application/json")
+	r.Header.Set("Accept", "application/json")
+
+	resp, err := c.c.CallAPI(r)
+	if err != nil || resp == nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode >= 300 {
+		bodyBytes, _ := ioutil.ReadAll(resp.Body)
+		return nil, fmt.Errorf("Status: %v, Body: %s", resp.Status, bodyBytes)
+	}
+
+	if err = json.NewDecoder(resp.Body).Decode(&results); err != nil {
+		return results, err
 	}
 
 	return results, err

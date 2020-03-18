@@ -224,3 +224,10 @@ func Market(market string) CallOption {
 		opt["market"] = market
 	}
 }
+
+// OrderState represents the state parameter for orders
+func OrderState(state types.OrderState) CallOption {
+	return func(opt map[string]interface{}) {
+		opt["state"] = state
+	}
+}
