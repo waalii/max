@@ -40,6 +40,48 @@ func (c *privateClient) Me(ctx context.Context, opts ...CallOption) (*models.Mem
 	return &member, err
 }
 
+// Account returns user accounts information
+//
+// Available `CallOption`:
+//
+// Note:
+//     Use AuthToken() to pass your auth tokens.
+func (c *privateClient) Account(ctx context.Context, opts ...CallOption) (results []*models.Account, err error) {
+	o := defaultOptions()
+	for _, opt := range opts {
+		opt(o)
+	}
+
+	body := make(map[string]interface{})
+
+	r, err := c.c.PrepareRequest(ctx,
+		c.cfg.BasePath+"/api/v2/members/accounts",
+		http.MethodGet,
+		body, make(map[string]string), url.Values{}, url.Values{}, "", nil)
+	if err != nil {
+		return nil, err
+	}
+
+	r.Header.Set("Content-Type", "application/json")
+	r.Header.Set("Accept", "application/json")
+
+	resp, err := c.c.CallAPI(r)
+	if err != nil || resp == nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode >= 300 {
+		bodyBytes, _ := ioutil.ReadAll(resp.Body)
+		return nil, fmt.Errorf("Status: %v, Body: %s", resp.Status, bodyBytes)
+	}
+
+	if err = json.NewDecoder(resp.Body).Decode(&results); err != nil {
+		return results, err
+	}
+
+	return results, err
+}
+
 // Deposit returns details of the deposit with specific transaction ID.
 //
 // Available `CallOption`:

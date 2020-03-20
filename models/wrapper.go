@@ -27,3 +27,4 @@ type Member = api.Member
 type Deposit = api.Deposit
 type PaymentAddress = api.PaymentAddress
 type Withdrawal = api.Withdrawal
+type Account = api.Account
